@@ -4,8 +4,8 @@ class Emoji {
   final String text;
   final EmojiCategory category;
   final List<Emoji> diversityChildren;
-  final List<MapEntry<String, String>> limitRangeAndroid;
-  final List<MapEntry<String, String>> limitRangeIOS;
+  final List<MapEntry<String, String>>? limitRangeAndroid;
+  final List<MapEntry<String, String>>? limitRangeIOS;
 
   /// Creates a emoji class
   ///
@@ -29,13 +29,13 @@ class Emoji {
   /// Check if [emoji] is compatible by The android [systemVersion]
   static bool isAndroidCompatible(Emoji emoji, String systemVersion) {
     if (emoji.limitRangeAndroid == null) return false;
-    return _versionCompatibility(emoji.limitRangeAndroid, systemVersion);
+    return _versionCompatibility(emoji.limitRangeAndroid ?? [], systemVersion);
   }
 
   /// Check if [emoji] is compatible by The IOS [systemVersion]
   static bool isIOSCompatible(Emoji emoji, String systemVersion) {
     if (emoji.limitRangeIOS == null) return false;
-    return _versionCompatibility(emoji.limitRangeIOS, systemVersion);
+    return _versionCompatibility(emoji.limitRangeIOS ?? [], systemVersion);
   }
 
   /// return Emoji text

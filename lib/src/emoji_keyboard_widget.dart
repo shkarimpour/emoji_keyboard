@@ -21,14 +21,14 @@ const _categoryTitleHeight = _categoryHeaderHeight; // todo: fix scroll issue
 class EmojiKeyboard extends StatelessWidget {
   final bool floatingHeader;
   final int column;
-  final double height;
+  final double? height;
   final OnEmojiSelected onEmojiSelected;
   final CategoryIcons categoryIcons;
   final CategoryTitles categoryTitles;
   final Color color;
 
   final contentKey = UniqueKey();
-  final List<GlobalKey> categoryKeyStore = List(8);
+  final List<GlobalKey?> categoryKeyStore = List.filled(8, null);
 
   /// Creates a emoji keyboard widget.
   ///
@@ -47,10 +47,10 @@ class EmojiKeyboard extends StatelessWidget {
   ///
   /// If [floatingHeader] is true then keyboard scrolls offscreen header as the user scrolls down the list.
   EmojiKeyboard({
-    Key key,
+    Key? key,
     this.column = 8,
     this.height = 290.0,
-    @required this.onEmojiSelected,
+    required this.onEmojiSelected,
     this.floatingHeader = false,
     this.color = Colors.white,
     this.categoryIcons = const CategoryIcons(),
@@ -60,7 +60,10 @@ class EmojiKeyboard extends StatelessWidget {
   /// Calback function when user press one of categorie in keyboard header
   /// and scroll emojis grid to the postion of that category by it's [index].
   void onCategoryClick(int index) {
-    Scrollable.ensureVisible(categoryKeyStore[index].currentContext);
+    if (categoryKeyStore[index] != null &&
+        categoryKeyStore[index]!.currentContext != null) {
+      Scrollable.ensureVisible(categoryKeyStore[index]!.currentContext!);
+    }
   }
 
   /// set the [key] of emoji category header by it's [index] in grid.
@@ -140,11 +143,13 @@ class EmojiKeyboard extends StatelessWidget {
                               crossAxisCount: 8,
                             ),
                             delegate: SliverChildListDelegate.fixed(
-                              snapshot.data[index ~/ 2].map((Emoji emoji) {
+                              (snapshot.data?[index ~/ 2] ?? [])
+                                  .map((Emoji emoji) {
                                 return CupertinoButton(
                                   key: ValueKey('${emoji.text}'),
                                   pressedOpacity: 0.4,
                                   padding: EdgeInsets.all(0),
+                                  onPressed: () => onEmojiSelected(emoji),
                                   child: Center(
                                     child: Text(
                                       '${emoji.text}',
@@ -153,7 +158,6 @@ class EmojiKeyboard extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  onPressed: () => onEmojiSelected(emoji),
                                 );
                               }).toList(),
                             ),
@@ -177,10 +181,10 @@ class EmojiKeyboard extends StatelessWidget {
 
 class _EmojiKeyboardHeader implements SliverPersistentHeaderDelegate {
   const _EmojiKeyboardHeader({
-    this.minExtent,
-    @required this.maxExtent,
-    @required this.categoryIcons,
-    @required this.onClick,
+    this.minExtent = 0,
+    required this.maxExtent,
+    required this.categoryIcons,
+    required this.onClick,
     this.color = Colors.white,
   });
 
@@ -207,6 +211,7 @@ class _EmojiKeyboardHeader implements SliverPersistentHeaderDelegate {
               pressedOpacity: 0.4,
               padding: EdgeInsets.all(0),
               borderRadius: BorderRadius.all(Radius.circular(0)),
+              onPressed: () => onClick(index),
               child: Center(
                 child: Icon(
                   categoryIcons[index],
@@ -214,7 +219,6 @@ class _EmojiKeyboardHeader implements SliverPersistentHeaderDelegate {
                       (minExtent < maxExtent - 10) ? minExtent : maxExtent - 10,
                 ),
               ),
-              onPressed: () => onClick(index),
             ),
           ),
         ),
@@ -226,10 +230,10 @@ class _EmojiKeyboardHeader implements SliverPersistentHeaderDelegate {
   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
 
   @override
-  FloatingHeaderSnapConfiguration get snapConfiguration => null;
+  FloatingHeaderSnapConfiguration? get snapConfiguration => null;
 
   @override
-  OverScrollHeaderStretchConfiguration get stretchConfiguration => null;
+  OverScrollHeaderStretchConfiguration? get stretchConfiguration => null;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => null;

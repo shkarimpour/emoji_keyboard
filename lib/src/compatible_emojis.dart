@@ -35,7 +35,7 @@ void _emojiDispatcher(Emoji emoji) {
 
 typedef Compatible = bool Function(Emoji emoji, String systemVersion);
 
-Future<bool> _getCompatibleEmojis(String systemVersion) async {
+Future<bool> _getCompatibleEmojis(String? systemVersion) async {
   final _deviceInfoPlugin = DeviceInfoPlugin();
 
   Compatible isCompatible;
@@ -51,10 +51,10 @@ Future<bool> _getCompatibleEmojis(String systemVersion) async {
   }
 
   for (final emoji in emojiList) {
-    if (isCompatible(emoji, systemVersion)) {
+    if (isCompatible(emoji, systemVersion!)) {
       _emojiDispatcher(emoji);
       emoji.diversityChildren.forEach((childEmoji) {
-        if (isCompatible(childEmoji, systemVersion)) {
+        if (isCompatible(childEmoji, systemVersion!)) {
           _emojiDispatcher(childEmoji);
         }
       });
@@ -66,7 +66,7 @@ Future<bool> _getCompatibleEmojis(String systemVersion) async {
 bool _loaded = false;
 final List<List<Emoji>> _emojis = List.generate(8, (_) => <Emoji>[]);
 
-Future<List<List<Emoji>>> getEmojis({String systemVersion}) async {
+Future<List<List<Emoji>>> getEmojis({String? systemVersion}) async {
   if (!_loaded) {
     _loaded = await _getCompatibleEmojis(systemVersion);
   }

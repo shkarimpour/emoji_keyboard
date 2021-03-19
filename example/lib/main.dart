@@ -46,8 +46,8 @@ class MainPage extends StatelessWidget {
             ),
           ),
           FloatingActionButton(
-            child: const Icon(Icons.clear),
             onPressed: clearText,
+            child: const Icon(Icons.clear),
           ),
           EmojiKeyboard(
             onEmojiSelected: onEmojiSelected,
